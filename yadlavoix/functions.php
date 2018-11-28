@@ -66,6 +66,67 @@
 	// autorise les appels récursifs de Display Posts Shortcode
 	add_filter( 'display_posts_shortcode_inception_override', '__return_false' );
 
+	// affiche les pièces-jointes attachées à la page
+	function cma_get_attachments($parent_id) {
+		$args = array( 'post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $parent_id,
+				   'post_mime_type'=>array('application/pdf', 'application/msword', 'image/jpeg'), 'order'=>'ASC', 'orderby'=>'ID' ); 
+		$attachments = get_posts($args);
+		if ($attachments) {
+			echo('<ul id="list_docu">');
+				foreach ( $attachments as $attachment ) {
+					echo '<li class="' . join( ' ', get_post_class() ) . '" id="post-' . get_the_ID() . '">';
+				    echo '<img class="picto" src="' . get_bloginfo('stylesheet_directory') . '/images/docu.png" alt="Document" />';
+    				echo '<h2>' . $attachment->post_title . '</h2>';
+    				echo '<p>' . $attachment->post_content .'</p>';
+    				echo '<a href="' . get_permalink( $attachment->ID ) . '" target="_blank"><img class="lire" src="' . get_bloginfo('stylesheet_directory') . '/images/lire.png" alt="lire" /></a>';
+					echo '</li>';
+				}
+			echo('</ul><br />');
+		}
+	}
+
+	// display file attached to page by ACF
+	function cma_acf_attachment ( $file ) {
+		echo '<li class="' . join( ' ', get_post_class() ) . '" id="attachment-' . $file["ID"] . '">';
+		echo '<img class="picto" src="' . get_bloginfo('stylesheet_directory') . '/images/docu.png" alt="Document" />';
+		echo '<h2>' . $file["title"] . '</h2>';
+		echo '<p>' . $file["caption"] .'</p>';
+		echo '<a href="' . $file["url"] . '" target="_blank"><img class="lire" src="' . get_bloginfo('stylesheet_directory') . '/images/lire.png" alt="lire" /></a>';
+		echo '</li>';
+
+	}
+	add_action( 'avada_before_additional_page_content', 'cma_add_attachments');
+	function cma_add_attachments () {
+		if ( get_the_ID() == 8686 ) {
+			echo '<ul id="list_docu">';
+			$args = array(
+				'sort_order' => 'asc',
+				'sort_column' => 'menu_order',
+				'hierarchical' => 0,
+				'exclude' => '',
+				'include' => '',
+				'meta_key' => '',
+				'meta_value' => '',
+				'authors' => '',
+				'child_of' => 0,
+				'parent' => 39,
+				'exclude_tree' => '',
+				'number' => '',
+				'offset' => 0,
+				'post_type' => 'page',
+				'post_status' => 'publish'
+			); 
+			$pages = get_pages($args); 
+			foreach ( $pages as $page )	{
+				$file = get_field( "document_pdf", $page->ID );
+				if ($file) {
+					cma_acf_attachment( $file );
+				}
+			}
+			echo '</ul>';
+		}
+	}
+
 	// ajoute des catégories aux medias
 	// register new taxonomy which applies to attachments
 	// from https://code.tutsplus.com/articles/applying-categories-tags-and-custom-taxonomies-to-media-attachments--wp-32319
@@ -105,4 +166,6 @@
 		$bulk_actions['email_to_eric'] = __( 'Email to Eric', 'email_to_eric');
 		return $bulk_actions;
 	} */
+
+
 ?>
