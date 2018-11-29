@@ -95,6 +95,8 @@
 		echo '</li>';
 
 	}
+
+	// afichage de la page complète Documents à télécharger depuis le menu
 	add_action( 'avada_before_additional_page_content', 'cma_add_attachments');
 	function cma_add_attachments () {
 		if ( get_the_ID() == 8686 ) {
