@@ -67,7 +67,8 @@
 	add_filter( 'display_posts_shortcode_inception_override', '__return_false' );
 
 	// affiche les pièces-jointes attachées à la page
-	function cma_get_attachments($parent_id) {
+	//Le code ci-dessous n'est pas utilisé - il a été remplacé par l'utilisation de ACF
+/* 	function cma_get_attachments($parent_id) {
 		$args = array( 'post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $parent_id,
 				   'post_mime_type'=>array('application/pdf', 'application/msword', 'image/jpeg'), 'order'=>'ASC', 'orderby'=>'ID' ); 
 		$attachments = get_posts($args);
@@ -84,7 +85,7 @@
 			echo('</ul><br />');
 		}
 	}
-
+ */
 	// display file attached to page by ACF
 	function cma_acf_attachment ( $file ) {
 		echo '<li class="' . join( ' ', get_post_class() ) . '" id="attachment-' . $file["ID"] . '">';
@@ -97,6 +98,8 @@
 	}
 
 	// afichage de la page complète Documents à télécharger depuis le menu
+	// La page Documents dans le menu est la page 8686 et les différents documents sont des sous-pages de la page 39
+	// Les documents sont attachés aux sous-pages de la page 39 via ACF dans un champ document_pdf
 	add_action( 'avada_before_additional_page_content', 'cma_add_attachments');
 	function cma_add_attachments () {
 		if ( get_the_ID() == 8686 ) {
@@ -128,6 +131,21 @@
 			echo '</ul>';
 		}
 	}
+
+	// Modifie  la présentation de l'article (single) de la catégorie equipe pour inclure le titre et le champ type_enseignement au début du texte 
+	// Vient en remplacement du titre normal qui n'est pas affiché par Avada
+	function cma_modify_team_post_content( $content ) {
+		$cat = get_the_category( );
+		if ( $cat[0]->slug != "equipe")
+			return $content;
+
+		$result .= "<div class='team_header'>" . get_the_title() . " &bullet; <em>" . get_field( "type_enseignement" ) ."</em></div>";
+	
+		return $result . $content;
+	
+	}
+	
+	add_filter( 'the_content', 'cma_modify_team_post_content' );
 
 	// ajoute des catégories aux medias
 	// register new taxonomy which applies to attachments
