@@ -139,7 +139,7 @@
 		if ( $cat[0]->slug != "equipe")
 			return $content;
 
-		$result .= "<div class='team_header'>" . get_the_title() . " &bullet; <em>" . get_field( "type_enseignement" ) ."</em></div>";
+		$result .= "<div class='team_member_header'><span class='team_member_name'>" . get_the_title() . " </span>&bullet; <span class='team_member_desc'>" . get_field( "type_enseignement" ) ."</span></div>";
 	
 		return $result . $content;
 	
