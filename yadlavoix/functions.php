@@ -187,5 +187,53 @@
 		return $bulk_actions;
 	} */
 
-
+	// Vérifie si l'adhésion produit woocommerce se trouve dans le panier
+	// le Product ID est 9472
+	function ydlv_is_adhesion_in_cart() {
+		foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+			// est-il déjà dans le panier, si oui, on  ne l'ajoute pas
+			$_product = $values['data'];
+		
+			if( 9472 == $_product->id ) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// ajoute le produit adhésion au panier (product ID 9472)
+	// cette action est déclenchée quand on ajoute un produit au panier
+	function ydlv_add_adhesion ( $cart_item_key, $product_id ) {
+		if ( $product_id == 9472 ) {
+			// inutile de l'ajouter si c'est lui qu'on ajoute
+			return;
+		}
+		$bInCart = ydlv_is_adhesion_in_cart();
+		
+		if (!$bInCart) {
+			WC()->cart->add_to_cart( 9472, 1 );
+		}
+	}
+	
+	add_action( "woocommerce_add_to_cart", "ydlv_add_adhesion", 10, 2 );
+	
+	// à l'affichage du panier, on affiche un message indiquant la nécessité de l'adhésion
+	// TODO : faire une liste des produits qui nécessitent l'adhésion pour être plus fin
+	// dans la gestion de l'adhésion
+	function ydlv_msg_adhesion () {
+		$bInCart = ydlv_is_adhesion_in_cart();
+		$msg = "<span class='adhesion'>L'adhésion à l'association est obligatoire pour certaines activités. ";
+		if ($bInCart) {
+			$msg .= "L'adhésion figure dans votre panier. ";
+		} else {
+			$msg .= "L'adhésion ne figure pas dans votre panier. ";
+		}
+		$msg .= sprintf("Pensez à %s ce produit à votre panier si vous %s adhérent. ", $bInCart ? "retirer" : "ajouter", $bInCart ? "êtes déjà" : "n'êtes pas encore");
+	
+		$msg .= "</span>";
+	
+		echo $msg;
+	}
+	
+	add_action( "woocommerce_before_cart_contents", "ydlv_msg_adhesion" );
 ?>
