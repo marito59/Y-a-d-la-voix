@@ -200,6 +200,18 @@
 		}
 		return false;
 	}
+
+	// vérifie si le contenu du panier nécessite une adhésion
+	function ydlv_adhesion_needed() {
+		foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+			$_product = $values['data'];
+			
+			if( "Oui" == $_product->get_attribute("adhesion") ) {
+				return true;
+			}
+		}
+		return false;	
+	}
 	
 	// ajoute le produit adhésion au panier (product ID 9472)
 	// cette action est déclenchée quand on ajoute un produit au panier
@@ -209,8 +221,8 @@
 			return;
 		}
 		$bInCart = ydlv_is_adhesion_in_cart();
-		
-		if (!$bInCart) {
+		$bAdhesionRequired = ydlv_adhesion_needed();
+		if (!$bInCart && $bAdhesionRequired) {
 			WC()->cart->add_to_cart( 9472, 1 );
 		}
 	}
@@ -222,14 +234,14 @@
 	// dans la gestion de l'adhésion
 	function ydlv_msg_adhesion () {
 		$bInCart = ydlv_is_adhesion_in_cart();
-		$msg = "<span class='adhesion'>L'adhésion à l'association est obligatoire pour certaines activités. ";
+		$msg = "<span class='adhesion'>L'adhésion à l'association Y a d'la voix ! est obligatoire pour certaines activités. ";
 		if ($bInCart) {
 			$msg .= "L'adhésion figure dans votre panier. ";
 		} else {
 			$msg .= "L'adhésion ne figure pas dans votre panier. ";
 		}
 		$msg .= sprintf("Pensez à %s ce produit à votre panier si vous %s adhérent. ", $bInCart ? "retirer" : "ajouter", $bInCart ? "êtes déjà" : "n'êtes pas encore");
-	
+		$msg .= $bInCart ? "" : "Pour ajouter l'adhésion au panier, cliquez sur le bouton ci-dessous" . do_shortcode("[add_to_cart id=\"9472\" show_price=\"FALSE\" style=\"border:0px solid #e2001a; padding: 6px; width:260px;\"]");
 		$msg .= "</span>";
 	
 		echo $msg;
