@@ -15,15 +15,25 @@
 		);
 	}
 	add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
-
-	function my_child_theme_setup() {
-		// load custom translation file for the parent theme
-		load_theme_textdomain( 'Avada', get_stylesheet_directory() . '/languages/yadlavoix' );
-		// load translation file for the child theme
-		load_child_theme_textdomain( 'Avada', get_stylesheet_directory() . '/languages' );
-	}
-	add_action( 'after_setup_theme', 'my_child_theme_setup' );
 	
+	/*
+	 * Enregistrement des formats personnalisés de thumbnail
+	 */
+	add_action('init', 'my_init_function');
+	
+    function my_init_function() {
+		add_theme_support( 'post-thumbnails' );
+		add_image_size( 'nos-cours-image', 360, 240, true ); // Hard Crop Mode
+   }	
+
+   	add_filter( 'image_size_names_choose', 'my_custom_sizes' );
+   
+  	function my_custom_sizes( $sizes ) {
+	  	return array_merge( $sizes, array(
+			'nos-cours-image' => __( 'Image Nos Cours - 360x240' ),
+	  	) );
+	}	
+
 
 	// utilisation d'une template part dans Display Post Shortcode pour afficher les évènements
 	function cma_ydlv_dps_template_part( $output, $original_atts ) {
