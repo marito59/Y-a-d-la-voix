@@ -23,7 +23,7 @@
 	
     function my_init_function() {
 		add_theme_support( 'post-thumbnails' );
-		add_image_size( 'nos-cours-image', 360, 240, true ); // Hard Crop Mode
+		add_image_size( 'nos-cours-image', 360, 9999, false ); // Soft Crop Mode
    }	
 
    	add_filter( 'image_size_names_choose', 'my_custom_sizes' );
@@ -258,4 +258,26 @@
 	}
 	
 	add_action( "woocommerce_before_cart_contents", "ydlv_msg_adhesion" );
+
+	/* permet de trier les produits par ordre de prix */
+	add_filter( 'woocommerce_shortcode_products_query', 'ydlv_woocommerce_shortcode_products_orderby' );
+
+	function ydlv_woocommerce_shortcode_products_orderby( $args ) {
+
+			$standard_array = array('menu_order','title','date','rand','id');
+
+			if( isset( $args['orderby'] ) && !in_array( $args['orderby'], $standard_array ) ) {
+					$args['meta_key'] = $args['orderby'];
+					$args['orderby']  = 'meta_value_num'; 
+			}
+
+			return $args;
+	}
+
+	/**
+	 * Remove related products output
+	 * from https://docs.woocommerce.com/document/remove-related-posts-output/
+	 * Note : ne semble pas fonctionner - remplacé par l'option CSS
+ 	 */
+	remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
 ?>
