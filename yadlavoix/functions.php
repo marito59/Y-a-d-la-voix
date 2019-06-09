@@ -97,7 +97,7 @@
 	}
  */
 	// display file attached to page by ACF
-	function cma_acf_attachment ( $file ) {
+/* 	function cma_acf_attachment ( $file ) {
 		echo '<li class="' . join( ' ', get_post_class() ) . '" id="attachment-' . $file["ID"] . '">';
 		echo '<img class="picto" src="' . get_bloginfo('stylesheet_directory') . '/images/docu.png" alt="Document" />';
 		echo '<h2>' . $file["title"] . '</h2>';
@@ -106,11 +106,11 @@
 		echo '</li>';
 
 	}
-
+ */
 	// afichage de la page complète Documents à télécharger depuis le menu
 	// La page Documents dans le menu est la page 8686 et les différents documents sont des sous-pages de la page 39
 	// Les documents sont attachés aux sous-pages de la page 39 via ACF dans un champ document_pdf
-	add_action( 'avada_before_additional_page_content', 'cma_add_attachments');
+/* 	add_action( 'avada_before_additional_page_content', 'cma_add_attachments');
 	function cma_add_attachments () {
 		if ( get_the_ID() == 8686 ) {
 			echo '<ul id="list_docu">';
@@ -141,7 +141,7 @@
 			echo '</ul>';
 		}
 	}
-
+ */
 	// Modifie  la présentation de l'article (single) de la catégorie equipe pour inclure le titre et le champ type_enseignement au début du texte 
 	// Vient en remplacement du titre normal qui n'est pas affiché par Avada
 	function cma_modify_team_post_content( $content ) {
@@ -280,4 +280,48 @@
 	 * Note : ne semble pas fonctionner - remplacé par l'option CSS
  	 */
 	remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
+
+/**
+ * Ajout de paramètres personnalisés pour le filtrage des Docuents à télécharger
+ * Description : on filtre la query sur la date de fin du document définie avec ACF
+ * 		et on ordonne le résultat sur l'ordre d'affichage aussi défini dans ACF
+ * 		Il y a dnc 2 meta_key. Pour résoudre cela, on utilise un paramère spécifique
+ * 		pour stocker le meta_key de la date et onn l'injecte dans une meta_query
+ * @author CMA à partir du code de Bill Erickson
+ * @link http://www.billerickson.net/shortcut-args-for-display-posts-shortcode
+ *
+ * @param array $args, WP Query arguments
+ * @param array $atts, shortcode arguments
+ * @return array $args
+ */
+function cma_dps_date_fin_filter( $args, $atts ) {
+	// If neither of my custom parameters are in use, return the $args (no modifications necessary)
+if( ! ( isset( $atts['date_fin'] ) ) )
+	return $args;
+
+// Set up a tax query, using the existing tax query if there is one	
+$meta_query = isset( $args['meta_query'] ) ? $args['meta_query'] : array();
+
+// If they specified date_fin, include that in the meta query
+if( isset( $atts['date_fin'] ) ) {
+	$meta_query[] = array(
+		'key' => 'date_fin',
+		'value'    => date('Y-m-d', strtotime($atts['date_fin'])),
+		'compare'    => ">=",
+		'type'		=> 'DATE',
+	);
+}
+
+// For Multiple tax queries, ensure results match both queries
+if( 1 < count( $meta_query ) && !isset( $meta_query['relation'] ) )
+	$meta_query['relation'] = 'AND';
+
+$args['meta_query'] = $meta_query;
+
+//var_dump($args);
+
+return $args;
+
+}
+add_filter( 'display_posts_shortcode_args', 'cma_dps_date_fin_filter', 10, 2 );
 ?>
