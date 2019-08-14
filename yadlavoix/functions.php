@@ -244,7 +244,9 @@
 	// dans la gestion de l'adhésion
 	function ydlv_msg_adhesion () {
 		$bInCart = ydlv_is_adhesion_in_cart();
-		$msg = "<span class='adhesion'>L'adhésion à l'association Y a d'la voix ! est obligatoire pour certaines activités. ";
+		$msg = "<span class='adhesion'>";
+		$msg .= "L'adhésion à l'association Y a d'la voix ! est obligatoire pour certaines activités. ";
+
 		if ($bInCart) {
 			$msg .= "L'adhésion figure dans votre panier. ";
 		} else {
@@ -252,6 +254,9 @@
 		}
 		$msg .= sprintf("Pensez à %s ce produit à votre panier si vous %s adhérent. ", $bInCart ? "retirer" : "ajouter", $bInCart ? "êtes déjà" : "n'êtes pas encore");
 		$msg .= $bInCart ? "" : "Pour ajouter l'adhésion au panier, cliquez sur le bouton ci-dessous" . do_shortcode("[add_to_cart id=\"9472\" show_price=\"FALSE\" style=\"border:0px solid #e2001a; padding: 6px; width:260px;\"]");
+
+		$msg .= "Nous vous rappelons que l'adhésion est valable un an de date à date.<br /><br />";
+		$msg .= "Si vous avez choisi un Atelier mixte, n'oubliez pas de sélectionner l'Atelier auquel vous souhaitez ajouter des cours particuliers : Atelier Voix & Expression scénique, Atelier Chant Découverte & Apprentissage, ou Atelier Chant Apprentissage & Perfectionnement.";
 		$msg .= "</span>";
 	
 		echo $msg;
