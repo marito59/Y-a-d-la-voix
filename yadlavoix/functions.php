@@ -252,7 +252,7 @@
 		} else {
 			$msg .= "L'adhésion ne figure pas dans votre panier. ";
 		}
-		$msg .= sprintf("Pensez à %s ce produit à votre panier si vous %s adhérent. ", $bInCart ? "retirer" : "ajouter", $bInCart ? "êtes déjà" : "n'êtes pas encore");
+		$msg .= sprintf("Pensez à %s votre panier si vous %s adhérent. ", $bInCart ? "retirer ce produit de" : "ajouter ce produit à", $bInCart ? "êtes déjà" : "n'êtes pas encore");
 		$msg .= $bInCart ? "" : "Pour ajouter l'adhésion au panier, cliquez sur le bouton ci-dessous" . do_shortcode("[add_to_cart id=\"9472\" show_price=\"FALSE\" style=\"border:0px solid #e2001a; padding: 6px; width:260px;\"]");
 
 		$msg .= "Nous vous rappelons que l'adhésion est valable un an de date à date.<br /><br />";
