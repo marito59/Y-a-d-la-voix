@@ -245,7 +245,7 @@
 	function ydlv_msg_adhesion () {
 		$bInCart = ydlv_is_adhesion_in_cart();
 		$msg = "<span class='adhesion'>";
-		$msg .= "L'adhésion à l'association Y a d'la voix ! est obligatoire pour certaines activités. ";
+		$msg .= "L'adhésion à l'association Y a d'la Voix ! est obligatoire pour certaines activités. ";
 
 		if ($bInCart) {
 			$msg .= "L'adhésion figure dans votre panier. ";
